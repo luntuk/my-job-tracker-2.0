@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Form, redirect, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Form, redirect, Link, useLocation } from 'react-router-dom';
 import Wrapper from '../assets/wrappers/RegisterAndLoginPage';
 import { FormRow, Logo, SubmitBtn } from '../components';
 import customFetch from '../utils/customFetch';
@@ -28,7 +28,12 @@ export const action = async ({ request }) => {
 };
 
 const RegisterAndLogin = () => {
-  const [isRegister, setIsRegister] = useState(true);
+  const location = useLocation();
+  const [isRegister, setIsRegister] = useState(location.pathname === '/register');
+
+  useEffect(() => {
+    setIsRegister(location.pathname === '/register');
+  }, [location.pathname]);
 
   return (
     <Wrapper>
