@@ -57,10 +57,8 @@ if (!process.env.JWT_SECRET) {
 // Підключення до MongoDB
 try {
   await mongoose.connect(process.env.MONGO_URL);
-  console.log('✅ MongoDB connected');
 } catch (error) {
   console.error('MongoDB connection failed:', error.message);
-  console.log('Server starting without database connection...');
 }
 
 app.listen(port, () => {
