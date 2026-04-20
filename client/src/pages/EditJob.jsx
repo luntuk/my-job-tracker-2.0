@@ -1,7 +1,7 @@
 import { FormRow, FormRowSelect, SubmitBtn } from '../components';
 import Wrapper from '../assets/wrappers/DashboardFormPage';
-import { useLoaderData, useParams } from 'react-router-dom';
-import { JOB_STATUS, JOB_TYPE } from '../../../utils/constants';
+import { useLoaderData } from 'react-router-dom';
+import { JOB_STATUS, JOB_TYPE } from '../utils/constants';
 import { Form, redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import customFetch from '../utils/customFetch';
@@ -48,9 +48,33 @@ export const action =
 const EditJob = () => {
   const id = useLoaderData();
 
-  const {
-    data: { job },
-  } = useQuery(singleJobQuery(id));
+  const { data, isLoading, isError, error } = useQuery(singleJobQuery(id));
+  const job = data?.job;
+
+  if (isLoading) {
+    return (
+      <Wrapper>
+        <div className='form'>
+          <h4 className='form-title'>Loading job...</h4>
+        </div>
+      </Wrapper>
+    );
+  }
+
+  if (isError || !job) {
+    const errorMessage =
+      error?.response?.data?.msg || 'Unable to load job for editing';
+    toast.error(errorMessage);
+
+    return (
+      <Wrapper>
+        <div className='form'>
+          <h4 className='form-title'>Unable to load job</h4>
+          <p>{errorMessage}</p>
+        </div>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>

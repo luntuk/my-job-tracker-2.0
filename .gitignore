@@ -9,7 +9,6 @@ client/dist/
 .env
 .env.local
 .env.*.local
-.env.example  
 
 # Production builds / Vite
 dist/

@@ -16,15 +16,15 @@ const withValidationErrors = (validateValues) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         const errorMessages = errors.array().map((error) => error.msg);
+        const message = errorMessages.join(', ');
 
-        const firstMessage = errorMessages[0];
-        if (errorMessages[0].startsWith('no job')) {
-          throw new NotFoundError(errorMessages);
+        if (message.startsWith('no job')) {
+          throw new NotFoundError(message);
         }
-        if (errorMessages[0].startsWith('not authorized')) {
+        if (message.startsWith('not authorized')) {
           throw new UnauthorizedError('not authorized to access this route');
         }
-        throw new BadRequestError(errorMessages);
+        throw new BadRequestError(message);
       }
       next();
     },
@@ -39,6 +39,29 @@ export const validateJobInput = withValidationErrors([
     .isIn(Object.values(JOB_STATUS))
     .withMessage('invalid status value'),
   body('jobType')
+    .isIn(Object.values(JOB_TYPE))
+    .withMessage('invalid type value'),
+]);
+
+export const validateJobUpdateInput = withValidationErrors([
+  body().custom((body) => {
+    const hasUpdates = ['company', 'position', 'jobLocation', 'status', 'jobType'].some(
+      (field) => body[field] !== undefined && body[field] !== ''
+    );
+    if (!hasUpdates) {
+      throw new Error('At least one field is required to update');
+    }
+    return true;
+  }),
+  body('company').optional().notEmpty().withMessage('company is required'),
+  body('position').optional().notEmpty().withMessage('position is required'),
+  body('jobLocation').optional().notEmpty().withMessage('job location is required'),
+  body('status')
+    .optional()
+    .isIn(Object.values(JOB_STATUS))
+    .withMessage('invalid status value'),
+  body('jobType')
+    .optional()
     .isIn(Object.values(JOB_TYPE))
     .withMessage('invalid type value'),
 ]);
@@ -79,8 +102,6 @@ export const validateRegisterInput = withValidationErrors([
     .withMessage('password is required')
     .isLength({ min: 8 })
     .withMessage('password must be at least 8 characters long'),
-  body('location').notEmpty().withMessage('location is required'),
-  body('lastName').notEmpty().withMessage('last name is required'),
 ]);
 
 export const validateLoginInput = withValidationErrors([
@@ -92,20 +113,4 @@ export const validateLoginInput = withValidationErrors([
   body('password').notEmpty().withMessage('password is required'),
 ]);
 
-export const validateUpdateUserInput = withValidationErrors([
-  body('name').notEmpty().withMessage('name is required'),
-  body('email')
-    .notEmpty()
-    .withMessage('email is required')
-    .isEmail()
-    .withMessage('invalid email format')
-    .custom(async (email, { req }) => {
-      const user = await User.findOne({ email });
-      if (user && user._id.toString() !== req.user.userId) {
-        throw new BadRequestError('email already exists');
-      }
-    }),
 
-  body('location').notEmpty().withMessage('location is required'),
-  body('lastName').notEmpty().withMessage('last name is required'),
-]);

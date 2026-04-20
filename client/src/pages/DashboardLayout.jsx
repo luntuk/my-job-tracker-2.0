@@ -15,8 +15,8 @@ const checkDefaultTheme = () => {
 const userQuery = {
   queryKey: ['user'],
   queryFn: async () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    const { data } = await customFetch.get('/auth/me');
+    return data.user;
   },
 };
 
@@ -24,7 +24,7 @@ export const loader = (queryClient) => async () => {
   try {
     return await queryClient.ensureQueryData(userQuery);
   } catch (error) {
-    return redirect('/');
+    return redirect('/register');
   }
 };
 
@@ -33,18 +33,19 @@ const DashboardContext = createContext();
 const DashboardLayout = ({ queryClient }) => {
   const queryResult = useQuery(userQuery);
   const user = queryResult.data;
+  const isUserLoading = queryResult.isLoading;
   const navigate = useNavigate();
   const navigation = useNavigation();
   const isPageLoading = navigation.state === 'loading';
   const [showSidebar, setShowSidebar] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(checkDefaultTheme());
 
-  // Redirect to login if no user data
+  // Redirect to register only after user loading is finished
   useEffect(() => {
-    if (!user) {
-      navigate('/');
+    if (!isUserLoading && !user) {
+      navigate('/register');
     }
-  }, [user, navigate]);
+  }, [user, isUserLoading, navigate]);
 
   const toggleDarkTheme = () => {
     const newDarkTheme = !isDarkTheme;
@@ -60,7 +61,6 @@ const DashboardLayout = ({ queryClient }) => {
   const logoutUser = async () => {
     navigate('/');
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
     queryClient.invalidateQueries();
     toast.success('Logging out...');
   };

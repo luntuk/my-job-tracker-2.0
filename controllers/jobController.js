@@ -3,10 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import day from 'dayjs';
 import { NotFoundError } from '../errors/customErrors.js';
-
-const isDatabaseConnected = () => {
-  return mongoose.connection.readyState === 1;
-};
+import { isDatabaseConnected } from '../utils/databaseUtils.js';
 
 export const getAllJobs = async (req, res) => {
   if (!isDatabaseConnected()) {

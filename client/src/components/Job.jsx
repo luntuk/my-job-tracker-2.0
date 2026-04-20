@@ -40,6 +40,9 @@ const Job = ({
           </div>
         </div>
         <footer className='actions'>
+          <Link to={`../edit-job/${_id}`} className='btn edit-btn' style={{ marginRight: '0.5rem' }}>
+            Edit
+          </Link>
           <Form method='post' action={`../delete-job/${_id}`}>
             <button type='submit' className='btn delete-btn' style={{ backgroundColor: '#dc3545', color: 'white' }}>
               Remove

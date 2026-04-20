@@ -1,10 +1,11 @@
 import { Router } from 'express';
 const router = Router();
-import { login, register } from '../controllers/authController.js';
+import { login, register, getCurrentUser } from '../controllers/authController.js';
 import {
   validateRegisterInput,
   validateLoginInput,
 } from '../middleware/validationMiddleware.js';
+import { authenticateUser } from '../middleware/authMiddleware.js';
 
 import rateLimiter from 'express-rate-limit';
 
@@ -16,5 +17,6 @@ const apiLimiter = rateLimiter({
 
 router.post('/register', apiLimiter, validateRegisterInput, register);
 router.post('/login', apiLimiter, validateLoginInput, login);
+router.get('/me', authenticateUser, getCurrentUser);
 
 export default router;

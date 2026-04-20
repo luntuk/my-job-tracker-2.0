@@ -13,12 +13,11 @@ export const action = async ({ request }) => {
   try {
     const endpoint = isRegister ? '/auth/register' : '/auth/login';
     const response = await customFetch.post(endpoint, data);
-    const { token, user } = response.data;
-    
-    // Save token and user to localStorage
+    const { token } = response.data;
+
+    // Save token to localStorage
     localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    
+
     toast.success(isRegister ? 'Registration successful' : 'Login successful');
     return redirect('/dashboard');
   } catch (error) {
@@ -44,8 +43,6 @@ const RegisterAndLogin = () => {
         {isRegister && (
           <>
             <FormRow type='text' name='name' placeholder='Enter your first name' />
-            <FormRow type='text' name='lastName' labelText='last name' placeholder='Enter your last name' />
-            <FormRow type='text' name='location' placeholder='Your city or location' />
           </>
         )}
         

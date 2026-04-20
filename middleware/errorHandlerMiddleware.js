@@ -4,8 +4,14 @@ const errorHandlerMiddleware = (err, req, res, next) => {
   if (err.code === 11000) {
     return res.status(StatusCodes.BAD_REQUEST).json({ msg: 'Email already exists' });
   }
+
   const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
   const msg = err.message || 'something went wrong, try again later';
+
+  if (statusCode >= StatusCodes.INTERNAL_SERVER_ERROR) {
+    console.error(err);
+  }
+
   res.status(statusCode).json({ msg });
 };
 

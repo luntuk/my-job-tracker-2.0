@@ -48,20 +48,28 @@ app.use('*', (req, res) => {
 
 app.use(errorHandlerMiddleware);
 
-const port = process.env.PORT || 5100;
+const port = process.env.PORT || 5000;
 
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required');
 }
 
-// Підключення до MongoDB
+if (!process.env.MONGO_URL) {
+  throw new Error('MONGO_URL environment variable is required');
+}
+
 try {
   await mongoose.connect(process.env.MONGO_URL);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('MongoDB connected');
+  }
 } catch (error) {
   console.error('MongoDB connection failed:', error.message);
+  process.exit(1);
 }
 
 app.listen(port, () => {
-  if (process.env.NODE_ENV === 'development') 
+  if (process.env.NODE_ENV === 'development') {
     console.log(`Server running on port ${port}`);
+  }
 });

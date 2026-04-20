@@ -9,6 +9,7 @@ import {
   Error,
   AddJob,
   AllJobs,
+  EditJob,
   Profile,
 } from './pages';
 
@@ -17,6 +18,7 @@ import { loader as dashboardLoader } from './pages/DashboardLayout';
 import { action as addJobAction } from './pages/AddJob';
 import { loader as allJobsLoader } from './pages/AllJobs';
 import { action as deleteJobAction } from './pages/DeleteJob';
+import { action as editJobAction, loader as editJobLoader } from './pages/EditJob';
 import ErrorElement from './components/ErrorElement';
 
 export const checkDefaultTheme = () => {
@@ -74,6 +76,12 @@ const router = createBrowserRouter([
             element: <AllJobs />,
             loader: allJobsLoader(queryClient),
             errorElement: <ErrorElement />,
+          },
+          {
+            path: 'edit-job/:id',
+            element: <EditJob />,
+            loader: editJobLoader(queryClient),
+            action: editJobAction(queryClient),
           },
           {
             path: 'profile',
